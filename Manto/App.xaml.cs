@@ -81,6 +81,21 @@ namespace Manto
             Window.Current.Activate();
         }
 
+        protected override async void OnActivated(IActivatedEventArgs args)
+        {
+            base.OnActivated(args);
+
+            if (args.Kind == ActivationKind.VoiceCommand)
+            {
+                var voiceCommandArgs = args as VoiceCommandActivatedEventArgs;
+
+                if (voiceCommandArgs != null)
+                {
+                    // Implement switch case that includes all voice commands as a case
+                }
+            }
+        }
+
         /// <summary>
         /// Invoked when Navigation to a certain page fails
         /// </summary>

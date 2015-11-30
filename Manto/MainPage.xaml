@@ -8,6 +8,8 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Image x:Name="imageFortuneTeller" HorizontalAlignment="Center" Height="200" Margin="0,60,0,0" VerticalAlignment="Top" Width="200" Source="Assets/Fortune_Teller.png"/>
+        <TextBlock x:Name="textBlockFortune" HorizontalAlignment="Left" Margin="10,335,0,0" TextWrapping="Wrap" Text="Julian G West is my hero" VerticalAlignment="Top" FontFamily="MV Boli" FontSize="18.667" Tapped="Fortune_Text_Click"/>
 
     </Grid>
 </Page>

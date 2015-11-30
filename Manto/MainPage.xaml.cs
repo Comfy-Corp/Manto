@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Media.SpeechSynthesis;
+using MantoLib;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -23,6 +24,7 @@ namespace Manto
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public List<FortuneInformation> fortuneInformationList;
         public MainPage()
         {
             this.InitializeComponent();
@@ -41,14 +43,27 @@ namespace Manto
 
         private void randomNewFortune(object sender, TappedRoutedEventArgs e)
         {
-
+            randomFortune(fortuneInformationList);
         }
 
-        public string randomFortune()
+        public string randomFortune(List<FortuneInformation> items)
         {
-            return "Placeholder";
+            if (items.Count == 1)
+            {
+                return items.First().Name + " will die in a fire tomorrow!";
+            }
+            else if (items.Count == 2)
+            {
+                return items.First().Name + " will ask " + items[1].Name + " about their day and not be interested at all!";
+            }
+            else
+            {
+                return "Undefined";
+            }
         }
-    }
+
+
+        }
 
 
 }

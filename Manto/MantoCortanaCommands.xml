@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<VoiceCommands xmlns="http://schemas.microsoft.com/voicecommands/1.2">
+  <CommandSet xml:lang="en-gb" Name="MantoCommandSet_en-gb">
+    <AppName> Manto </AppName>
+    <Example> Manto, tell my fortune for tomorrow. </Example>
+
+    <Command Name="TellFortuneFor">
+      <Example> What's my fortune today, Manto? </Example>
+      <ListenFor RequireAppName="BeforeOrAfterPhrase"> [Please] [What's] Tell me {FortuneTarget}['s]  fortune [next] [this]</ListenFor>
+      <ListenFor RequireAppName="ExplicitlySpecified"> show {FortuneTarget}['s] {builtin:AppName} fortune to </ListenFor>
+      <Feedback> The fortune for {FortuneTarget} is . . . </Feedback>
+      <Navigate />
+    </Command>
+
+    <Command Name="AddPerson">
+      <Example> Add John to Manto </Example>
+      <ListenFor RequireAppName="AfterPhrase"> [Please] Add {dictatedFindText} to </ListenFor>
+      <Feedback> Do you want to add {dictatedFindText}?</Feedback>
+      <Navigate />
+    </Command>
+
+    <!--<PhraseList Label="Times">
+      <Item>Today</Item>
+      <Item>Tomorrow</Item>
+      <Item>Week</Item>
+      <Item>Year</Item>
+    </PhraseList>-->
+    
+    <PhraseList Label="FortuneTarget">
+      <Item>My</Item>
+      <Item>My Wife</Item>
+      <Item>John</Item>
+      <Item>London</Item>
+      <Item>Satya Nadella</Item>
+    </PhraseList>
+    
+    <PhraseTopic Label="dictatedFindText" Scenario="Dictation">
+      <Subject> name </Subject>
+    </PhraseTopic>
+  </CommandSet>
+
+ <CommandSet xml:lang="en-us" Name="MantoCommandSet_en-us">
+    <AppName> Manto </AppName>
+    <Example> Manto, tell my fortune for tomorrow. </Example>
+
+    <Command Name="TellFortuneFor">
+      <Example> What's my fortune today, Manto? </Example>
+      <ListenFor RequireAppName="BeforeOrAfterPhrase"> [Please] [What's] Tell me {FortuneTarget}['s]  fortune [next] [this]</ListenFor>
+      <ListenFor RequireAppName="ExplicitlySpecified"> show {FortuneTarget}['s] {builtin:AppName} fortune to </ListenFor>
+      <Feedback> The fortune for {FortuneTarget} is . . . </Feedback>
+      <Navigate />
+    </Command>
+
+    <Command Name="AddPerson">
+      <Example> Add John to Manto </Example>
+      <ListenFor RequireAppName="AfterPhrase"> [Please] Add {dictatedFindText} to </ListenFor>
+      <Feedback> Do you want to add {dictatedFindText}?</Feedback>
+      <Navigate />
+    </Command>
+
+    <!--<PhraseList Label="Times">
+      <Item>Today</Item>
+      <Item>Tomorrow</Item>
+      <Item>Week</Item>
+      <Item>Year</Item>
+    </PhraseList>-->
+    
+    <PhraseList Label="FortuneTarget">
+      <Item>My</Item>
+      <Item>My Wife</Item>
+      <Item>John</Item>
+      <Item>London</Item>
+      <Item>Satya Nadella</Item>
+    </PhraseList>
+    
+    <PhraseTopic Label="dictatedFindText" Scenario="Dictation">
+      <Subject> name </Subject>
+    </PhraseTopic>
+  </CommandSet>
+</VoiceCommands>

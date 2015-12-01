@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.VoiceCommands;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media.SpeechRecognition;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -40,7 +44,7 @@ namespace Manto
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
 
 #if DEBUG
@@ -79,9 +83,65 @@ namespace Manto
             }
             // Ensure the current window is active
             Window.Current.Activate();
+
+            try
+            {
+                // Install the main VCD. Since there's no simple way to test that the VCD has been imported, or that it's your most recent
+                // version, it's not unreasonable to do this upon app load.
+                StorageFile vcdStorageFile = await Package.Current.InstalledLocation.GetFileAsync(@"MantoCortanaCommands.xml");
+
+                await Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(vcdStorageFile);
+                
+                         
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Installing Voice Commands Failed: " + ex.ToString());
+            }
         }
 
-        protected override async void OnActivated(IActivatedEventArgs args)
+        /// <summary>
+        /// TODO: Move this funtion to a sensible location, for example the model loading service
+        /// 
+        /// Whenever the centralised datamodel is updated, we should trigger an update of the voice command Phrase list.
+        /// This allows voice commands to be dynamically listen for multiple targets e.g. "Manto, Tell Me {FortuneTarget}'s Fortune"
+        /// </summary>
+        private void UpdatePhraseList()
+        {
+            try
+            {
+                // Update the destination phrase list, so that Cortana voice commands can use destinations added by users.
+                // When adding an element, the UI navigates automatically back to this page, so the phrase list will be
+                // updated automatically.
+                VoiceCommandDefinition commandDefinitions;
+
+                string countryCode = CultureInfo.CurrentCulture.Name.ToLower();
+                if (countryCode.Length == 0)
+                {
+                    countryCode = "en-us"; //Default to US
+                }
+
+                if (VoiceCommandDefinitionManager.InstalledCommandDefinitions.TryGetValue("MantoCommandSet_" + countryCode, out commandDefinitions))
+                {
+                    /*The part where we load the centralised datamodel
+                    List<string> Targets = new List<string>();
+                    foreach (Model.Trip t in store.Trips)
+                    {
+                        Targets.Add(t.Destination);
+                    }
+                    await commandDefinitions.SetPhraseListAsync("destination", destinations);
+                    */
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Updating Phrase list for VCDs: " + ex.ToString());
+            }
+        }
+
+        
+        //protected override async void OnActivated(IActivatedEventArgs args)
+        protected override void OnActivated(IActivatedEventArgs args)
         {
             base.OnActivated(args);
 
@@ -89,11 +149,30 @@ namespace Manto
             {
                 var voiceCommandArgs = args as VoiceCommandActivatedEventArgs;
 
+
                 if (voiceCommandArgs != null)
                 {
                     // Implement switch case that includes all voice commands as a case
+                    Windows.Media.SpeechRecognition.SpeechRecognitionResult speechRecognitionResult = voiceCommandArgs.Result;
+
+                    // Get the name of the voice command and the text spoken. See AdventureWorksCommands.xml for
+                    // the <Command> tags this can be filled with.
+                    string voiceCommandName = speechRecognitionResult.RulePath[0];
+                    string textSpoken = speechRecognitionResult.Text;
+
+                    // The commandMode is either "voice" or "text", and it indictes how the voice command
+                    // was entered by the user.
+                    // Apps should respect "text" mode by providing feedback in silent form.
+                    string commandMode = this.SemanticInterpretation("commandMode", speechRecognitionResult);
+
                 }
             }
+        }
+        
+        //Function used to find out whether or not the command was spoken aloud or typed.
+        private string SemanticInterpretation(string interpretationKey, SpeechRecognitionResult speechRecognitionResult)
+        {
+            return speechRecognitionResult.SemanticInterpretation.Properties[interpretationKey].FirstOrDefault();
         }
 
         /// <summary>

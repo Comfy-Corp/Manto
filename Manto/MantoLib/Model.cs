@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MantoLib
 {
-    public class FortuneInformarion : INotifyPropertyChanged
+    public class FortuneInformation : INotifyPropertyChanged
     {
         //Notify property changed requirement
         public event PropertyChangedEventHandler PropertyChanged;

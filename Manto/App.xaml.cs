@@ -144,9 +144,12 @@ namespace Manto
         protected override void OnActivated(IActivatedEventArgs args)
         {
             base.OnActivated(args);
+            Type navigationToPageType;
 
             if (args.Kind == ActivationKind.VoiceCommand)
             {
+                System.Diagnostics.Debug.WriteLine("Cortana execute");
+                /* Executed on cortana launch
                 var voiceCommandArgs = args as VoiceCommandActivatedEventArgs;
 
 
@@ -165,8 +168,38 @@ namespace Manto
                     // Apps should respect "text" mode by providing feedback in silent form.
                     string commandMode = this.SemanticInterpretation("commandMode", speechRecognitionResult);
 
-                }
+                }*/
             }
+            else
+            {
+                navigationToPageType = typeof(Manto.MainPage);
+            }
+
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            // Do not repeat app initialization when the Window already has content,
+            // just ensure that the window is active
+            if (rootFrame == null)
+            {
+                // Create a Frame to act as the navigation context and navigate to the first page
+                rootFrame = new Frame();
+
+                rootFrame.NavigationFailed += OnNavigationFailed;
+
+                // Place the frame in the current Window
+                Window.Current.Content = rootFrame;
+            }
+
+            if (rootFrame.Content == null)
+            {
+                // When the navigation stack isn't restored navigate to the first page,
+                // configuring the new page by passing required information as a navigation
+                // parameter
+                rootFrame.Navigate(typeof(MainPage));
+            }
+            // Ensure the current window is active
+            Window.Current.Activate();
+
         }
         
         //Function used to find out whether or not the command was spoken aloud or typed.

@@ -43,7 +43,7 @@ namespace Manto.CortanaService
         ResourceContext cortanaContext;
         */
 
-        public void Run(IBackgroundTaskInstance taskInstance)
+        public async void Run(IBackgroundTaskInstance taskInstance)
         {
             //Use to let Cortana know what's up
             serviceDeferral = taskInstance.GetDeferral();
@@ -52,7 +52,42 @@ namespace Manto.CortanaService
 
             AppServiceTriggerDetails triggerDetails = taskInstance.TriggerDetails as AppServiceTriggerDetails;
 
-            throw new NotImplementedException();
+            if (triggerDetails != null && triggerDetails.Name == "AdventureWorksVoiceCommandService")
+            {
+                try
+                {
+                    voiceServiceConnection =
+                        VoiceCommandServiceConnection.FromAppServiceTriggerDetails(
+                            triggerDetails);
+
+                    voiceServiceConnection.VoiceCommandCompleted += OnVoiceCommandCompleted;
+
+                    VoiceCommand voiceCommand = await voiceServiceConnection.GetVoiceCommandAsync();
+
+                    // Perform the appropriate command (defined in Manto:MantoCortanaCommands.xml)
+                    switch (voiceCommand.CommandName)
+                    {
+                        case "whenIsTripToDestination":
+                            var destination = voiceCommand.Properties["destination"][0];
+                            await SendCompletionMessageForDestination(destination);
+                            break;
+                        case "cancelTripToDestination":
+                            var cancelDestination = voiceCommand.Properties["destination"][0];
+                            await SendCompletionMessageForCancellation(cancelDestination);
+                            break;
+                        default:
+                            // As with app activation VCDs, we need to handle the possibility that
+                            // an app update may remove a voice command that is still registered.
+                            // This can happen if the user hasn't run an app since an update.
+                            LaunchAppInForeground();
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Handling Voice Command failed " + ex.ToString());
+                }
+            }
         }
 
         /// <summary>

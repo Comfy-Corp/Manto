@@ -16,7 +16,7 @@
       <Example> Add John to Manto </Example>
       <ListenFor RequireAppName="AfterPhrase"> [Please] Add {dictatedFindText} to </ListenFor>
       <Feedback> Do you want to add {dictatedFindText}?</Feedback>
-      <Navigate />
+      <VoiceCommandService Target="MantoCortanaService" />
     </Command>
 
     <!--<PhraseList Label="Times">
